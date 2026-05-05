@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "type": "MULTIPLE_CHOICE",
+    "question": "What is the time complexity of accessing an element in an array by index?",
+    "options": ["O(1)", "O(n)", "O(log n)", "O(n²)"],
+    "correctAnswer": 0,
+    "explanation": "Arrays use contiguous memory, allowing direct access in O(1) time.",
+    "code": null
+  },
+  {
+    "id": "2",
+    "type": "FILL_BLANK",
+    "question": "An array stores elements in ______ memory locations.",
+    "correctAnswer": "contiguous",
+    "explanation": "Contiguous memory means elements are stored right next to each other.",
+    "code": null
+  },
+  {
+    "id": "3",
+    "type": "CODE_COMPLETION",
+    "question": "Initialize an empty list in Python.",
+    "correctAnswer": "[]",
+    "explanation": "In Python, a list (array) can be initialized using empty brackets.",
+    "code": "my_array = ____"
+  },
+  {
+    "id": "4",
+    "type": "MULTIPLE_CHOICE",
+    "question": "Which method is used to add an element at the end of a list in Python?",
+    "options": ["add()", "push()", "append()", "insert()"],
+    "correctAnswer": 2,
+    "explanation": "The append() method adds an item to the end of the list.",
+    "code": null
+  },
+  {
+    "id": "5",
+    "type": "FILL_BLANK",
+    "question": "The index of the first element in a Python list is ______.",
+    "correctAnswer": "0",
+    "explanation": "Like most programming languages, Python uses zero-based indexing for sequences.",
+    "code": null
+  }
+]
