@@ -1,76 +1,96 @@
 [
   {
-    "id": "intro_1",
+    "id": "movie_intro",
     "type": "THEORY",
-    "question": "Meet the 'Locker Room'!",
-    "explanation": "Imagine a hallway of lockers. Every locker has a number (an index) and holds one item. This is exactly how an Array works in a computer's memory!",
-    "code": "# A list of locker items\nlockers = ['⚽', '🏀', '🏈']"
+    "question": "The Movie Credits! 🎬",
+    "explanation": "Imagine the end credits of a movie. Every actor's name appears in a specific order. This is just like an Array! The position of the name is its 'Index'.",
+    "code": "# Cast List Array\ncast = ['Tom Cruise', 'Zendaya', 'The Rock']"
   },
   {
-    "id": "q1",
+    "id": "movie_q1",
     "type": "ARRAY_INTERACTION",
-    "question": "Quick! The owl needs his 🏀. It's in the second locker. What index should he open?",
-    "items": ["0", "1", "2"],
-    "arrayData": ["⚽", "(empty slot)", "🏈"],
-    "correctAnswer": ["⚽", "1", "🏈"],
-    "explanation": "Got it! Since we start at 0, the second locker is index 1. High five! ✋",
-    "code": "print(lockers[1]) # Outputs: 🏀"
+    "question": "The Director wants 'Zendaya' to be the Lead Actor! Move her to index 0.",
+    "items": ["Zendaya", "The Rock"],
+    "arrayData": ["(empty slot)", "Tom Cruise", "(empty slot)"],
+    "correctAnswer": ["Zendaya", "Tom Cruise", "The Rock"],
+    "explanation": "Star power! By moving her to index 0, she's now the first name in our array.",
+    "code": "print(cast[0]) # Outputs: Zendaya"
   },
   {
-    "id": "theory_zero",
-    "type": "THEORY",
-    "question": "The 'Zero' Rule!",
-    "explanation": "Computer scientists are weird—they count from 0. So the first item is arr[0], and the second is arr[1]. Don't let it trip you up!",
-    "code": "arr = ['Apple', 'Banana']\n# index 0 -> Apple\n# index 1 -> Banana"
-  },
-  {
-    "id": "q2",
+    "id": "movie_access_q",
     "type": "MULTIPLE_CHOICE",
-    "question": "If you have a shelf with 10 slots, what is the 'address' (index) of the very first slot?",
-    "options": [
-      "1",
-      "0",
-      "The first one",
-      "-1"
-    ],
+    "question": "If our cast is ['Zendaya', 'Tom Cruise', 'The Rock'], how do we get 'The Rock'?",
+    "options": ["cast[1]", "cast[2]", "cast[3]", "cast[0]"],
     "correctAnswer": 1,
-    "explanation": "Always 0! It's the starting point of our memory block.",
+    "explanation": "Since we count 0, 1, 2... The Rock is at index 2!",
     "code": null
   },
   {
-    "id": "q3",
-    "type": "ARRAY_INTERACTION",
-    "question": "Moving Day! Add a 💎 to the end of our treasure chest using .append().",
-    "items": ["💎"],
-    "arrayData": ["💰", "🪙", "📜"],
-    "correctAnswer": ["💰", "🪙", "📜", "💎"],
-    "explanation": ".append() is like adding a new locker at the very end of the hallway!",
-    "code": "treasure.append('💎')"
-  },
-  {
-    "id": "theory_shift",
+    "id": "movie_theory_insert",
     "type": "THEORY",
-    "question": "The Big Squeeze! 🏃‍♂️",
-    "explanation": "When you use .insert(1, 'X'), every item from index 1 onwards has to pack up and move one slot to the right to make room. It's hard work for the computer!",
-    "code": "arr = [1, 3]\narr.insert(1, 2) # [1, 2, 3]"
+    "question": "A Special Cameo! ✨",
+    "explanation": "When a new actor joins the middle of a scene, everyone else has to shift over to make room. In an Array, using .insert() does exactly this!",
+    "code": "cast = ['Batman', 'Joker']\ncast.insert(1, 'Robin')\n# ['Batman', 'Robin', 'Joker']"
   },
   {
-    "id": "q4",
-    "type": "CODE_COMPLETION",
-    "question": "The owl wants to SQUEEZE 'B' between 'A' and 'C'. Fill in the method name!",
-    "code": "letters = ['A', 'C']\nletters.______(1, 'B')",
-    "correctAnswer": "insert",
-    "explanation": "The .insert() method is perfect for putting items in the middle of the pack.",
-    "blanks": ["insert"]
-  },
-  {
-    "id": "q5",
+    "id": "movie_q2",
     "type": "ARRAY_INTERACTION",
-    "question": "The heist! 🕵️‍♂️ Remove the 💣 from the end of the array before it explodes!",
-    "items": ["💣"],
-    "arrayData": ["🔑", "💎", "💣"],
-    "correctAnswer": ["🔑", "💎"],
-    "explanation": "Phew! .pop() removes the last item and keeps the rest safe. Great job!",
-    "code": "bomb = items.pop()"
+    "question": "Cameo Alert! Insert 'Spider-Man' between 'Iron Man' and 'Thor'.",
+    "items": ["Spider-Man"],
+    "arrayData": ["Iron Man", "Thor"],
+    "correctAnswer": ["Iron Man", "Spider-Man", "Thor"],
+    "explanation": "Perfect! 'Thor' had to move from index 1 to index 2 to make space for Spidey.",
+    "code": "cast.insert(1, 'Spider-Man')"
+  },
+  {
+    "id": "movie_theory_delete",
+    "type": "THEORY",
+    "question": "The Final Cut! ✂️",
+    "explanation": "Sometimes a scene is too long. .pop() removes the very last item from our array, just like cutting the last scene of a movie.",
+    "code": "scenes = ['Intro', 'Fight', 'Ending', 'Blooper']\nscenes.pop() # Removes 'Blooper'"
+  },
+  {
+    "id": "movie_q3",
+    "type": "ARRAY_INTERACTION",
+    "question": "Director's Cut! Remove the 'Blooper' from the end of the movie.",
+    "items": ["Blooper"],
+    "arrayData": ["Action", "Drama", "Blooper"],
+    "correctAnswer": ["Action", "Drama"],
+    "explanation": "Scene deleted! .pop() kept the core movie safe and removed the last element.",
+    "code": "movie.pop()"
+  },
+  {
+    "id": "movie_theory_sort",
+    "type": "THEORY",
+    "question": "Box Office Rankings! 🏆",
+    "explanation": "Sorting helps us organize. .sort() can arrange movies alphabetically or by their ratings from lowest to highest.",
+    "code": "ratings = [5, 2, 4]\nratings.sort() # [2, 4, 5]"
+  },
+  {
+    "id": "movie_q4",
+    "type": "ARRAY_INTERACTION",
+    "question": "Rank these Movies alphabetically: Avengers, Batman, Cars.",
+    "items": ["Batman", "Cars", "Avengers"],
+    "arrayData": ["(empty slot)", "(empty slot)", "(empty slot)"],
+    "correctAnswer": ["Avengers", "Batman", "Cars"],
+    "explanation": "Looking organized! The .sort() method is a powerful way to order our data.",
+    "code": "movies.sort()"
+  },
+  {
+    "id": "movie_theory_reverse",
+    "type": "THEORY",
+    "question": "Rewind the Tape! ⏪",
+    "explanation": "Want to see the movie backwards? .reverse() flips the entire array. The first becomes last, and the last becomes first!",
+    "code": "tape = [1, 2, 3]\ntape.reverse() # [3, 2, 1]"
+  },
+  {
+    "id": "movie_q5",
+    "type": "ARRAY_INTERACTION",
+    "question": "TENET Style! Reverse the sequence of these scenes.",
+    "items": ["End", "Mid", "Start"],
+    "arrayData": ["(empty slot)", "(empty slot)", "(empty slot)"],
+    "correctAnswer": ["End", "Mid", "Start"],
+    "explanation": "Time inversion! The array is now exactly the opposite of how it started.",
+    "code": "scenes.reverse()"
   }
 ]

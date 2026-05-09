@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.lottie.compose)
+    implementation(libs.coil.compose)
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.junit)

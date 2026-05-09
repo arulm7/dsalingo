@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.app.dsalingo.data.model.Question
 import com.app.dsalingo.data.model.QuestionType
 import com.app.dsalingo.ui.theme.*
@@ -520,6 +522,25 @@ fun CodeSnippet(code: String) {
 }
 
 @Composable
+fun getImageUrl(name: String): String? {
+    return when (name) {
+        "Zendaya" -> "https://m.media-amazon.com/images/M/MV5BMjAxZTk4YmYtYjUzMi00OTI0LThjN2EtMDljYTdmM2U2NGY2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
+        "Tom Cruise" -> "https://m.media-amazon.com/images/M/MV5BMTk1MjExMzU3M15BMl5BanBnXkFtZTcwNzk3OTgzMw@@._V1_.jpg"
+        "The Rock" -> "https://m.media-amazon.com/images/M/MV5BMTkyNDQ3NzAxM15BMl5BanBnXkFtZTgwODIwMTQ0OEE@._V1_.jpg"
+        "Spider-Man" -> "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_.jpg"
+        "Iron Man" -> "https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_.jpg"
+        "Thor" -> "https://m.media-amazon.com/images/M/MV5BMTY3MTI5NjQ4Nl5BMl5BanBnXkFtZTcwOTU1OTU0OQ@@._V1_.jpg"
+        "Avengers" -> "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNjQxNy00ZGQ5LWFkOTAtZGQ5YzY2ZC00M2RlXkEyXkFqcGdeQXVyNjk1Njg0MzI@._V1_.jpg"
+        "Batman" -> "https://m.media-amazon.com/images/M/MV5BMTYwNjAyODIyMF5BMl5BanBnXkFtZTYwNDMwMDk2._V1_.jpg"
+        "Cars" -> "https://m.media-amazon.com/images/M/MV5BMTYxNjY5ZmYtNjcyOS00N2RmLWE3MzktYWU2OTliZTM4ZDExXkEyXkFqcGdeQXVyNjk1Njg0MzI@._V1_.jpg"
+        "Robert" -> "https://m.media-amazon.com/images/M/MV5BNTk2OGU4NzktODA5Ni00MDYyLWIyYWUtOWI2NDI1Y2ZkY2M3XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
+        "Cillian" -> "https://m.media-amazon.com/images/M/MV5BMjA5Njk3MjM4OV5BMl5BanBnXkFtZTcwMTc5MTE1Nw@@._V1_.jpg"
+        "Tom" -> "https://m.media-amazon.com/images/M/MV5BMTk1MjExMzU3M15BMl5BanBnXkFtZTcwNzk3OTgzMw@@._V1_.jpg"
+        else -> null
+    }
+}
+
+@Composable
 fun ArrayInteractionBody(
     currentItems: List<String>,
     availableBank: List<String>,
@@ -527,14 +548,18 @@ fun ArrayInteractionBody(
     onItemClick: (String, Boolean) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text("ARRAY VISUALIZER", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 12.sp)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("🎬", fontSize = 20.sp)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("FILM STRIP (ARRAY)", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 12.sp)
+        }
         Spacer(modifier = Modifier.height(12.dp))
         
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
             border = androidx.compose.foundation.BorderStroke(3.dp, DuoGrayLight),
-            color = DuoGrayLight.copy(alpha = 0.15f)
+            color = Color(0xFF1A1A1A) // Dark cinema background
         ) {
             LazyRow(
                 modifier = Modifier.padding(20.dp),
@@ -547,65 +572,123 @@ fun ArrayInteractionBody(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Surface(
                             modifier = Modifier
-                                .size(70.dp)
+                                .size(90.dp, 120.dp) // Poster aspect ratio
                                 .clickable(enabled = !isEmpty && !showResult) { onItemClick(item, false) },
-                            shape = RoundedCornerShape(16.dp),
-                            color = if (isEmpty) Color.Transparent else Color.White,
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isEmpty) Color.White.copy(alpha = 0.1f) else Color.White,
                             border = if (isEmpty) {
-                                androidx.compose.foundation.BorderStroke(2.dp, DuoGray.copy(alpha = 0.3f))
+                                androidx.compose.foundation.BorderStroke(2.dp, Color.White.copy(alpha = 0.2f))
                             } else {
-                                androidx.compose.foundation.BorderStroke(3.dp, DuoGrayLight)
-                            },
-                            shadowElevation = if (isEmpty) 0.dp else 4.dp
+                                androidx.compose.foundation.BorderStroke(2.dp, DuoBlue)
+                            }
                         ) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = if (isEmpty) "" else item,
-                                    fontSize = 28.sp,
-                                    textAlign = TextAlign.Center
-                                )
+                                if (isEmpty) {
+                                    Text("?", color = Color.White.copy(alpha = 0.3f), fontSize = 32.sp)
+                                } else {
+                                    val imageUrl = getImageUrl(item)
+                                    if (imageUrl != null) {
+                                        AsyncImage(
+                                            model = imageUrl,
+                                            contentDescription = item,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                        )
+                                        // Overlay name
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .align(Alignment.BottomCenter)
+                                                .background(Color.Black.copy(alpha = 0.6f))
+                                                .padding(vertical = 4.dp)
+                                        ) {
+                                            Text(
+                                                text = item,
+                                                color = Color.White,
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        }
+                                    } else {
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = Modifier.padding(8.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .background(DuoGrayLight, CircleShape),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(if (item.length > 1) item.take(1) else "🎬")
+                                            }
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                            Text(
+                                                text = item,
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = TextAlign.Center,
+                                                lineHeight = 12.sp,
+                                                maxLines = 2
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "[$index]",
-                            color = DuoGray,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontFamily = FontFamily.Monospace
+                            text = "Pos: $index",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold
                         )
                     }
                 }
             }
         }
         
-        Spacer(modifier = Modifier.height(40.dp))
-        Text("YOUR TOOLBOX", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 12.sp)
+        Spacer(modifier = Modifier.height(32.dp))
+        Text("CASTING COUCH (ELEMENT BANK)", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 12.sp)
         Spacer(modifier = Modifier.height(16.dp))
         
         @OptIn(ExperimentalLayoutApi::class)
         androidx.compose.foundation.layout.FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             availableBank.forEach { item ->
                 Surface(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
                         .clickable(enabled = !showResult) { onItemClick(item, true) },
-                    shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(3.dp, DuoGrayLight),
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
                     color = Color.White,
-                    shadowElevation = 4.dp
+                    shadowElevation = 2.dp
                 ) {
-                    Box(
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-                        contentAlignment = Alignment.Center
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val imageUrl = getImageUrl(item)
+                        if (imageUrl != null) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp).clip(CircleShape),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        } else {
+                            Text("👤", fontSize = 14.sp)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = item,
-                            fontSize = 24.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }

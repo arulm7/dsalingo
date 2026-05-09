@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -68,19 +68,19 @@ fun LearnScreen(
             Spacer(modifier = Modifier.height(32.dp))
         }
         
-        item {
-            Spacer(modifier = Modifier.height(32.dp))
-            Surface(
-                modifier = Modifier.fillMaxWidth().padding(24.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = DuoGrayLight.copy(alpha = 0.3f)
-            ) {
-                Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("MORE COMING SOON", fontWeight = FontWeight.ExtraBold, color = DuoGray)
-                    Text("Graphs, Trees, and more!", color = DuoGray, fontSize = 12.sp)
-                }
-            }
-        }
+//        item {
+//            Spacer(modifier = Modifier.height(32.dp))
+//            Surface(
+//                modifier = Modifier.fillMaxWidth().padding(24.dp),
+//                shape = RoundedCornerShape(16.dp),
+//                color = DuoGrayLight.copy(alpha = 0.3f)
+//            ) {
+//                Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Text("MORE COMING SOON", fontWeight = FontWeight.ExtraBold, color = DuoGray)
+//                    Text("Graphs, Trees, and more!", color = DuoGray, fontSize = 12.sp)
+//                }
+//            }
+//        }
     }
 }
 
