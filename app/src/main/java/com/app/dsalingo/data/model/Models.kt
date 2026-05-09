@@ -70,11 +70,19 @@ data class Question(
     val explanation: String = "",
     val code: String? = null,                   // code snippet shown with question
     val blanks: List<String>? = null,           // for code-completion
-    val items: List<String>? = null,            // for drag-drop
-    val correctOrder: List<Int>? = null         // for drag-drop
+    val items: List<String>? = null,            // for drag-drop / array interaction
+    val correctOrder: List<Int>? = null,         // for drag-drop
+    val arrayData: List<String>? = null         // initial array state
 )
 
-enum class QuestionType { MULTIPLE_CHOICE, CODE_COMPLETION, DRAG_DROP, FILL_BLANK }
+enum class QuestionType { 
+    THEORY, 
+    MULTIPLE_CHOICE, 
+    CODE_COMPLETION, 
+    DRAG_DROP, 
+    FILL_BLANK, 
+    ARRAY_INTERACTION 
+}
 
 data class Challenge(
     val id: String = "",

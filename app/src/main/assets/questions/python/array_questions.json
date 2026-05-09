@@ -1,44 +1,76 @@
 [
   {
-    "id": "1",
+    "id": "intro_1",
+    "type": "THEORY",
+    "question": "Meet the 'Locker Room'!",
+    "explanation": "Imagine a hallway of lockers. Every locker has a number (an index) and holds one item. This is exactly how an Array works in a computer's memory!",
+    "code": "# A list of locker items\nlockers = ['⚽', '🏀', '🏈']"
+  },
+  {
+    "id": "q1",
+    "type": "ARRAY_INTERACTION",
+    "question": "Quick! The owl needs his 🏀. It's in the second locker. What index should he open?",
+    "items": ["0", "1", "2"],
+    "arrayData": ["⚽", "(empty slot)", "🏈"],
+    "correctAnswer": ["⚽", "1", "🏈"],
+    "explanation": "Got it! Since we start at 0, the second locker is index 1. High five! ✋",
+    "code": "print(lockers[1]) # Outputs: 🏀"
+  },
+  {
+    "id": "theory_zero",
+    "type": "THEORY",
+    "question": "The 'Zero' Rule!",
+    "explanation": "Computer scientists are weird—they count from 0. So the first item is arr[0], and the second is arr[1]. Don't let it trip you up!",
+    "code": "arr = ['Apple', 'Banana']\n# index 0 -> Apple\n# index 1 -> Banana"
+  },
+  {
+    "id": "q2",
     "type": "MULTIPLE_CHOICE",
-    "question": "What is the time complexity of accessing an element in an array by index?",
-    "options": ["O(1)", "O(n)", "O(log n)", "O(n²)"],
-    "correctAnswer": 0,
-    "explanation": "Arrays use contiguous memory, allowing direct access in O(1) time.",
+    "question": "If you have a shelf with 10 slots, what is the 'address' (index) of the very first slot?",
+    "options": [
+      "1",
+      "0",
+      "The first one",
+      "-1"
+    ],
+    "correctAnswer": 1,
+    "explanation": "Always 0! It's the starting point of our memory block.",
     "code": null
   },
   {
-    "id": "2",
-    "type": "FILL_BLANK",
-    "question": "An array stores elements in ______ memory locations.",
-    "correctAnswer": "contiguous",
-    "explanation": "Contiguous memory means elements are stored right next to each other.",
-    "code": null
+    "id": "q3",
+    "type": "ARRAY_INTERACTION",
+    "question": "Moving Day! Add a 💎 to the end of our treasure chest using .append().",
+    "items": ["💎"],
+    "arrayData": ["💰", "🪙", "📜"],
+    "correctAnswer": ["💰", "🪙", "📜", "💎"],
+    "explanation": ".append() is like adding a new locker at the very end of the hallway!",
+    "code": "treasure.append('💎')"
   },
   {
-    "id": "3",
+    "id": "theory_shift",
+    "type": "THEORY",
+    "question": "The Big Squeeze! 🏃‍♂️",
+    "explanation": "When you use .insert(1, 'X'), every item from index 1 onwards has to pack up and move one slot to the right to make room. It's hard work for the computer!",
+    "code": "arr = [1, 3]\narr.insert(1, 2) # [1, 2, 3]"
+  },
+  {
+    "id": "q4",
     "type": "CODE_COMPLETION",
-    "question": "Initialize an empty list in Python.",
-    "correctAnswer": "[]",
-    "explanation": "In Python, a list (array) can be initialized using empty brackets.",
-    "code": "my_array = ____"
+    "question": "The owl wants to SQUEEZE 'B' between 'A' and 'C'. Fill in the method name!",
+    "code": "letters = ['A', 'C']\nletters.______(1, 'B')",
+    "correctAnswer": "insert",
+    "explanation": "The .insert() method is perfect for putting items in the middle of the pack.",
+    "blanks": ["insert"]
   },
   {
-    "id": "4",
-    "type": "MULTIPLE_CHOICE",
-    "question": "Which method is used to add an element at the end of a list in Python?",
-    "options": ["add()", "push()", "append()", "insert()"],
-    "correctAnswer": 2,
-    "explanation": "The append() method adds an item to the end of the list.",
-    "code": null
-  },
-  {
-    "id": "5",
-    "type": "FILL_BLANK",
-    "question": "The index of the first element in a Python list is ______.",
-    "correctAnswer": "0",
-    "explanation": "Like most programming languages, Python uses zero-based indexing for sequences.",
-    "code": null
+    "id": "q5",
+    "type": "ARRAY_INTERACTION",
+    "question": "The heist! 🕵️‍♂️ Remove the 💣 from the end of the array before it explodes!",
+    "items": ["💣"],
+    "arrayData": ["🔑", "💎", "💣"],
+    "correctAnswer": ["🔑", "💎"],
+    "explanation": "Phew! .pop() removes the last item and keeps the rest safe. Great job!",
+    "code": "bomb = items.pop()"
   }
 ]

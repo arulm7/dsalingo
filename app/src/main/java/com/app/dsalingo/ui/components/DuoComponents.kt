@@ -6,7 +6,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.dsalingo.ui.theme.*
@@ -25,6 +27,7 @@ fun DuoButton(
     modifier: Modifier = Modifier,
     color: Color = DuoGreen,
     shadowColor: Color = DuoGreenDark,
+    textColor: Color = Color.White,
     enabled: Boolean = true
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -63,7 +66,7 @@ fun DuoButton(
         ) {
             Text(
                 text = text,
-                color = Color.White,
+                color = textColor,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 18.sp
             )
@@ -83,5 +86,35 @@ fun DuoSecondaryButton(
         modifier = modifier,
         color = DuoBlue,
         shadowColor = DuoBlueDark
+    )
+}
+
+@Composable
+fun DuoTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(placeholder, fontWeight = FontWeight.Bold, color = DuoGray) },
+        modifier = modifier.fillMaxWidth(),
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        shape = RoundedCornerShape(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = DuoBlue,
+            unfocusedBorderColor = DuoGrayLight,
+            focusedContainerColor = DuoGrayLight.copy(alpha = 0.3f),
+            unfocusedContainerColor = DuoGrayLight.copy(alpha = 0.3f),
+            cursorColor = DuoBlue,
+            focusedTextColor = Color(0xFF4B4B4B),
+            unfocusedTextColor = Color(0xFF4B4B4B)
+        ),
+        singleLine = true
     )
 }

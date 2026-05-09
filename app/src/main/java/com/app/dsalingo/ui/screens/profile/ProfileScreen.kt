@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.dsalingo.ui.components.DuoButton
 import com.app.dsalingo.ui.theme.*
 
 @Composable
@@ -29,7 +30,7 @@ fun ProfileScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.White)
             .padding(horizontal = 16.dp),
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
@@ -77,11 +78,11 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileHeaderCard(onSignOut: () -> Unit) {
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
+        color = Color.White
     ) {
         Column(
             modifier = Modifier.padding(24.dp).fillMaxWidth(),
@@ -149,11 +150,11 @@ fun ProfileStatsGrid() {
 
 @Composable
 fun StatCardCompact(modifier: Modifier = Modifier, icon: String, title: String, value: String) {
-    Card(
+    Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
+        color = Color.White
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -192,11 +193,16 @@ fun PreferredLanguageSelector() {
 
 @Composable
 fun LanguageCard(modifier: Modifier = Modifier, icon: String, name: String, isSelected: Boolean, onClick: () -> Unit) {
-    Card(
-        modifier = modifier.clickable { onClick() }.border(if (isSelected) 2.dp else 0.dp, if (isSelected) BluePrimary else Color.Transparent, RoundedCornerShape(12.dp)),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isSelected) BluePrimary.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    Surface(
+        modifier = modifier
+            .clickable { onClick() }
+            .border(
+                if (isSelected) 2.dp else 2.dp,
+                if (isSelected) DuoBlue else DuoGrayLight,
+                RoundedCornerShape(16.dp)
+            ),
+        shape = RoundedCornerShape(16.dp),
+        color = if (isSelected) DuoBlue.copy(alpha = 0.1f) else Color.White
     ) {
         Column(
             modifier = Modifier.padding(12.dp).fillMaxWidth(),
@@ -225,10 +231,11 @@ fun LanguageProgressSection() {
 
 @Composable
 fun LanguageProgressItem(icon: String, name: String, completed: Int, total: Int, xp: Int, color: Color, isCurrent: Boolean) {
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
+        color = Color.White
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -286,14 +293,14 @@ fun ProUpgradeCard() {
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(
+                DuoButton(
+                    text = "UPGRADE NOW",
                     onClick = { /* Upgrade */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = PurplePrimary),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
-                ) {
-                    Text("Upgrade Now", fontWeight = FontWeight.Bold)
-                }
+                    color = Color.White,
+                    shadowColor = Color.White.copy(alpha = 0.5f),
+                    textColor = PurplePrimary,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

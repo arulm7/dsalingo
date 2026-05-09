@@ -27,11 +27,11 @@ import com.app.dsalingo.ui.theme.*
 
 // Added lessonCount to mock data
 val mockCategories = listOf(
-    DataStructureCategory("basics", "Fundamentals", "📚", 0xFF58CC02, 20, 10),
-    DataStructureCategory("array", "Arrays", "📊", 0xFF1CB0F6, 45, 12),
-    DataStructureCategory("string", "Strings", "🔤", 0xFFCE82FF, 30, 5),
-    DataStructureCategory("linkedlist", "Linked Lists", "🔗", 0xFFFF9600, 25, 0),
-    DataStructureCategory("stack", "Stacks", "📚", 0xFFEA2B2B, 15, 0)
+    DataStructureCategory("array", "Array Foundations", "📊", 0xFF1CB0F6, 8, 3),
+    DataStructureCategory("string", "String Secrets", "🔤", 0xFFCE82FF, 30, 0),
+    DataStructureCategory("linkedlist", "Chain Links", "🔗", 0xFF58CC02, 25, 0),
+    DataStructureCategory("stack", "Stack It Up", "📚", 0xFFEA2B2B, 15, 0),
+    DataStructureCategory("queue", "Get in Line", "👥", 0xFFFF9600, 20, 0)
 )
 
 // Helper to get dynamic lesson count for UI path
@@ -52,17 +52,34 @@ fun LearnScreen(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(Color.White),
-        contentPadding = PaddingValues(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Text("LEARNING PATH", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 14.sp)
-            Spacer(modifier = Modifier.height(24.dp))
+            UnitHeader(
+                title = "Section 1: Data Structures",
+                description = "Master the building blocks of algorithms",
+                color = DuoGreen
+            )
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
         items(mockCategories) { category ->
             DuoCategoryNode(category, onNavigateToCategory)
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+        
+        item {
+            Spacer(modifier = Modifier.height(32.dp))
+            Surface(
+                modifier = Modifier.fillMaxWidth().padding(24.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = DuoGrayLight.copy(alpha = 0.3f)
+            ) {
+                Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("MORE COMING SOON", fontWeight = FontWeight.ExtraBold, color = DuoGray)
+                    Text("Graphs, Trees, and more!", color = DuoGray, fontSize = 12.sp)
+                }
+            }
         }
     }
 }
@@ -130,24 +147,39 @@ fun CategoryDetailScreen(
     val color = Color(category.color)
     val totalLessons = getLessonCountForCategory(categoryId)
     
-    // Dynamic completed logic for mock UI
     val completedCount = (category.completedQuestions.toFloat() / category.totalQuestions.toFloat() * totalLessons).toInt()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(category.title, fontWeight = FontWeight.ExtraBold) },
+                title = { 
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(category.icon, fontSize = 24.sp)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(category.title, fontWeight = FontWeight.ExtraBold)
+                    }
+                },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, contentDescription = null) }
-                }
+                    IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, contentDescription = null, tint = DuoGray) }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding).background(Color.White),
+            modifier = Modifier.fillMaxSize().padding(padding).background(DuoGrayLight.copy(alpha = 0.2f)),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(vertical = 32.dp)
+            contentPadding = PaddingValues(bottom = 64.dp)
         ) {
+            item {
+                UnitHeader(
+                    title = "Unit 1",
+                    description = "Learn the fundamentals of ${category.title}",
+                    color = color
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
             items(totalLessons) { i ->
                 val isLocked = i > completedCount
                 val isCompleted = i < completedCount
@@ -167,6 +199,31 @@ fun CategoryDetailScreen(
 }
 
 @Composable
+fun UnitHeader(title: String, description: String, color: Color) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = color
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp)
+        ) {
+            Text(
+                text = title.uppercase(),
+                color = Color.White.copy(alpha = 0.8f),
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 14.sp
+            )
+            Text(
+                text = description,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
+    }
+}
+
+@Composable
 fun DuoLessonStep(index: Int, isLocked: Boolean, isCompleted: Boolean, color: Color, onClick: () -> Unit) {
     val xOffset = when(index % 4) {
         0 -> 0.dp
@@ -179,7 +236,7 @@ fun DuoLessonStep(index: Int, isLocked: Boolean, isCompleted: Boolean, color: Co
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.1f,
+        targetValue = 1.05f,
         animationSpec = infiniteRepeatable(
             animation = tween(1200, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -189,34 +246,48 @@ fun DuoLessonStep(index: Int, isLocked: Boolean, isCompleted: Boolean, color: Co
 
     val currentScale = if (!isLocked && !isCompleted) scale else 1f
 
-    Box(
-        modifier = Modifier
-            .offset(x = xOffset)
-            .graphicsLayer {
-                scaleX = currentScale
-                scaleY = currentScale
-            }
-            .size(75.dp)
-            .clickable(enabled = !isLocked) { onClick() },
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier.offset(x = xOffset),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val baseColor = if (isLocked) DuoGrayLight else color
-        val shadowColor = if (isLocked) DuoGray else color.copy(alpha = 0.7f)
-
-        Box(modifier = Modifier.fillMaxSize().padding(top = 4.dp).background(shadowColor, CircleShape))
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 4.dp)
-                .background(baseColor, CircleShape),
+                .graphicsLayer {
+                    scaleX = currentScale
+                    scaleY = currentScale
+                }
+                .size(85.dp)
+                .clickable(enabled = !isLocked) { onClick() },
             contentAlignment = Alignment.Center
         ) {
-            if (isLocked) {
-                Text("🔒", fontSize = 20.sp)
-            } else if (isCompleted) {
-                Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
-            } else {
-                Text("⭐", fontSize = 32.sp, color = Color.White)
+            val baseColor = if (isLocked) DuoGrayLight else color
+            val shadowColor = if (isLocked) DuoGray else color.copy(alpha = 0.7f)
+
+            // 3D Shadow
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp)
+                    .background(shadowColor, CircleShape)
+            )
+            
+            // Main Circle
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 4.dp)
+                    .background(baseColor, CircleShape)
+                    .border(if (!isLocked && !isCompleted) 4.dp else 0.dp, DuoYellow.copy(alpha = 0.5f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isLocked) {
+                    Icon(Icons.Default.Check, contentDescription = null, tint = Color.Transparent) // placeholder
+                    Text("🔒", fontSize = 24.sp)
+                } else if (isCompleted) {
+                    Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
+                } else {
+                    Text("⭐", fontSize = 38.sp, color = Color.White)
+                }
             }
         }
     }

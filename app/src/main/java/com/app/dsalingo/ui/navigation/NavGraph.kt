@@ -1,5 +1,7 @@
 package com.app.dsalingo.ui.navigation
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -22,7 +24,11 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        enterTransition = { fadeIn(animationSpec = tween(300)) },
+        exitTransition = { fadeOut(animationSpec = tween(300)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+        popExitTransition = { fadeOut(animationSpec = tween(300)) }
     ) {
         composable(Screen.Landing.route) {
             LandingScreen(
@@ -38,7 +44,8 @@ fun NavGraph(
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.Landing.route) { inclusive = true }
                     }
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -49,7 +56,8 @@ fun NavGraph(
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.Landing.route) { inclusive = true }
                     }
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 

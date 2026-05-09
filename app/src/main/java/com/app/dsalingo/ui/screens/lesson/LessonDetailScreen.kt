@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.dsalingo.data.model.Question
@@ -112,7 +115,9 @@ fun LessonDetailScreen(
                                 hearts = hearts,
                                 streakCount = streakCount,
                                 onCorrectAnswer = {
-                                    streakCount++
+                                    if (question.type != QuestionType.THEORY) {
+                                        streakCount++
+                                    }
                                     if (currentQuestionIndex < questions.size - 1) {
                                         currentQuestionIndex++
                                     } else {
@@ -192,6 +197,15 @@ fun QuestionBody(
 ) {
     var selectedOptionIndex by remember(question.id) { mutableStateOf<Int?>(null) }
     var textInput by remember(question.id) { mutableStateOf("") }
+    
+    // Array Interaction State - using immutable lists for better Compose state tracking
+    var currentArrayItems by remember(question.id) { 
+        mutableStateOf(question.arrayData ?: emptyList()) 
+    }
+    var availableItems by remember(question.id) { 
+        mutableStateOf(question.items ?: emptyList()) 
+    }
+
     var showResult by remember(question.id) { mutableStateOf(false) }
     var isCorrect by remember(question.id) { mutableStateOf(false) }
 
@@ -200,57 +214,65 @@ fun QuestionBody(
             Spacer(modifier = Modifier.height(24.dp))
             
             // Character + Speech Bubble
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val birdYOffset by animateDpAsState(
-                    targetValue = if (showResult && isCorrect) (-150).dp else 0.dp,
-                    animationSpec = if (showResult && isCorrect) tween(600, easing = FastOutSlowInEasing) else snap(),
-                    label = "birdFlight"
-                )
-                val birdAlpha by animateFloatAsState(
-                    targetValue = if (showResult && isCorrect) 0f else 1f,
-                    animationSpec = if (showResult && isCorrect) tween(600) else snap(),
-                    label = "birdAlpha"
-                )
-
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .offset(y = birdYOffset)
-                        .graphicsLayer { alpha = birdAlpha },
+                    modifier = Modifier.size(100.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     when {
                         showResult && !isCorrect && hearts <= 1 -> {
-                            LottieAnimationView(url = "https://lottie.host/80447384-5a67-466d-966a-12798e3b3303/4O2oN5kF0T.json")
+                            LottieAnimationRawRes(resId = R.raw.angry_bird)
                         }
                         showResult && !isCorrect -> {
                             LottieAnimationRawRes(resId = R.raw.angry_bird)
                         }
-                        streakCount >= 5 && !showResult -> {
-                            LottieAnimationView(url = "https://lottie.host/3e6f9661-0d32-4777-a843-8f6a9e224e2c/6L8B8YI8aQ.json")
-                        }
-                        streakCount >= 3 && !showResult -> {
-                            Text("🔥", fontSize = 60.sp)
-                        }
                         else -> {
-                            Text(if (showResult && isCorrect) "🥳" else "🦉", fontSize = 60.sp)
+                            LottieAnimationRawRes(resId = R.raw.angry_bird)
                         }
                     }
                 }
-                Spacer(modifier = Modifier.width(16.dp))
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                // Speech Bubble Triangle
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .graphicsLayer { rotationZ = 45f }
+                        .background(Color.White)
+                        .border(2.dp, DuoGrayLight, RoundedCornerShape(2.dp))
+                        .offset(x = 6.dp)
+                )
+
                 Surface(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight)
+                    border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
+                    color = Color.White
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        if (streakCount >= 3) {
+                        if (question.type == QuestionType.THEORY) {
+                            Surface(
+                                color = DuoBlue.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(4.dp),
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            ) {
+                                Text(
+                                    "NEW CONCEPT",
+                                    color = DuoBlue,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        } else if (streakCount >= 3 && !showResult) {
                             Text("🔥 $streakCount STREAK!", color = DuoOrange, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp)
                         }
                         Text(
                             text = question.question,
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4B4B4B)
                         )
                     }
                 }
@@ -260,6 +282,26 @@ fun QuestionBody(
 
             Box(modifier = Modifier.weight(1f)) {
                 when (question.type) {
+                    QuestionType.THEORY -> {
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                border = androidx.compose.foundation.BorderStroke(2.dp, DuoBlue.copy(alpha = 0.3f)),
+                                color = DuoBlue.copy(alpha = 0.05f)
+                            ) {
+                                Text(
+                                    text = question.explanation,
+                                    modifier = Modifier.padding(20.dp),
+                                    fontSize = 16.sp,
+                                    lineHeight = 24.sp,
+                                    color = Color(0xFF4B4B4B)
+                                )
+                            }
+                            if (question.code != null) {
+                                CodeSnippet(question.code)
+                            }
+                        }
+                    }
                     QuestionType.MULTIPLE_CHOICE -> {
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             question.options?.forEachIndexed { index, optionText ->
@@ -294,18 +336,7 @@ fun QuestionBody(
                     QuestionType.FILL_BLANK, QuestionType.CODE_COMPLETION -> {
                         Column {
                             if (question.code != null) {
-                                Surface(
-                                    color = DuoGrayLight.copy(alpha = 0.3f),
-                                    shape = RoundedCornerShape(8.dp),
-                                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                                ) {
-                                    Text(
-                                        text = question.code,
-                                        modifier = Modifier.padding(12.dp),
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 14.sp
-                                    )
-                                }
+                                CodeSnippet(question.code)
                             }
                             OutlinedTextField(
                                 value = textInput,
@@ -319,6 +350,31 @@ fun QuestionBody(
                                 )
                             )
                         }
+                    }
+                    QuestionType.ARRAY_INTERACTION -> {
+                        ArrayInteractionBody(
+                            currentItems = currentArrayItems,
+                            availableBank = availableItems,
+                            showResult = showResult,
+                            onItemClick = { item, fromBank ->
+                                if (!showResult) {
+                                    if (fromBank) {
+                                        val emptyIndex = currentArrayItems.indexOf("(empty slot)")
+                                        if (emptyIndex != -1) {
+                                            val newList = currentArrayItems.toMutableList()
+                                            newList[emptyIndex] = item
+                                            currentArrayItems = newList
+                                        } else {
+                                            currentArrayItems = currentArrayItems + item
+                                        }
+                                        availableItems = availableItems - item
+                                    } else {
+                                        currentArrayItems = currentArrayItems - item
+                                        availableItems = availableItems + item
+                                    }
+                                }
+                            }
+                        )
                     }
                     else -> {}
                 }
@@ -365,6 +421,9 @@ fun QuestionBody(
                                     showResult = false
                                     selectedOptionIndex = null
                                     textInput = ""
+                                    // Reset array interaction if wrong
+                                    currentArrayItems = question.arrayData ?: emptyList()
+                                    availableItems = question.items ?: emptyList()
                                 }
                             },
                             color = if (isCorrect) DuoGreen else DuoRed,
@@ -374,31 +433,59 @@ fun QuestionBody(
                 }
 
                 if (!showResult) {
+                    val isTheory = question.type == QuestionType.THEORY
                     DuoButton(
-                        text = "CHECK",
+                        text = if (isTheory) "CONTINUE" else "CHECK",
                         onClick = {
-                            isCorrect = when (question.type) {
-                                QuestionType.MULTIPLE_CHOICE -> {
-                                    val correctVal = when (val res = question.correctAnswer) {
-                                        is Number -> res.toInt()
-                                        is String -> res.toDoubleOrNull()?.toInt() ?: -1
-                                        else -> -1
+                            if (isTheory) {
+                                isCorrect = true
+                                onCorrectAnswer()
+                                // For theory, we don't show the result card, just move next
+                                // Actually, Duolingo usually shows a "Continue" button and maybe a small tip
+                                // Let's just move to next for simplicity or show a success state
+                            } else {
+                                isCorrect = when (question.type) {
+                                    QuestionType.MULTIPLE_CHOICE -> {
+                                        val correctVal = when (val res = question.correctAnswer) {
+                                            is Number -> res.toInt()
+                                            is String -> res.toDoubleOrNull()?.toInt() ?: -1
+                                            else -> -1
+                                        }
+                                        selectedOptionIndex == correctVal
                                     }
-                                    selectedOptionIndex == correctVal
-                                }
-                                QuestionType.FILL_BLANK, QuestionType.CODE_COMPLETION -> {
-                                    val correctStr = when (val res = question.correctAnswer) {
-                                        is Double -> if (res % 1.0 == 0.0) res.toInt().toString() else res.toString()
-                                        else -> res.toString()
+                                    QuestionType.FILL_BLANK, QuestionType.CODE_COMPLETION -> {
+                                        val correctStr = when (val res = question.correctAnswer) {
+                                            is Double -> if (res % 1.0 == 0.0) res.toInt().toString() else res.toString()
+                                            else -> res.toString()
+                                        }
+                                        textInput.trim().equals(correctStr, ignoreCase = true)
                                     }
-                                    textInput.trim().equals(correctStr, ignoreCase = true)
+                                    QuestionType.ARRAY_INTERACTION -> {
+                                        val correctList = question.correctAnswer as? List<*>
+                                        if (correctList != null) {
+                                            if (correctList.all { it is Number }) {
+                                                val expectedOrder = correctList.map { (it as Number).toInt() }
+                                                val originalItems = question.items ?: emptyList()
+                                                val expectedItems = expectedOrder.map { originalItems[it] }
+                                                currentArrayItems == expectedItems
+                                            } else {
+                                                currentArrayItems == correctList.map { it.toString() }
+                                            }
+                                        } else false
+                                    }
+                                    else -> false
                                 }
-                                else -> false
+                                if (isCorrect) onCorrectAnswer() else onWrongAnswer()
+                                showResult = true
                             }
-                            if (isCorrect) onCorrectAnswer() else onWrongAnswer()
-                            showResult = true
                         },
-                        enabled = selectedOptionIndex != null || textInput.isNotBlank(),
+                        enabled = when(question.type) {
+                            QuestionType.THEORY -> true
+                            QuestionType.MULTIPLE_CHOICE -> selectedOptionIndex != null
+                            QuestionType.FILL_BLANK, QuestionType.CODE_COMPLETION -> textInput.isNotBlank()
+                            QuestionType.ARRAY_INTERACTION -> currentArrayItems.isNotEmpty() && !currentArrayItems.contains("(empty slot)")
+                            else -> false
+                        },
                         color = DuoGreen,
                         shadowColor = DuoGreenDark
                     )
@@ -410,6 +497,119 @@ fun QuestionBody(
         if (showResult && isCorrect) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 LottieAnimationView(url = "https://assets10.lottiefiles.com/packages/lf20_rovf9gzu.json") // Confetti
+            }
+        }
+    }
+}
+
+@Composable
+fun CodeSnippet(code: String) {
+    Surface(
+        color = DuoGrayLight.copy(alpha = 0.3f),
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+    ) {
+        Text(
+            text = code,
+            modifier = Modifier.padding(16.dp),
+            fontFamily = FontFamily.Monospace,
+            fontSize = 14.sp,
+            color = Color.DarkGray
+        )
+    }
+}
+
+@Composable
+fun ArrayInteractionBody(
+    currentItems: List<String>,
+    availableBank: List<String>,
+    showResult: Boolean,
+    onItemClick: (String, Boolean) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text("ARRAY VISUALIZER", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 12.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            border = androidx.compose.foundation.BorderStroke(3.dp, DuoGrayLight),
+            color = DuoGrayLight.copy(alpha = 0.15f)
+        ) {
+            LazyRow(
+                modifier = Modifier.padding(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                itemsIndexed(currentItems) { index, item ->
+                    val isEmpty = item == "(empty slot)"
+                    
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Surface(
+                            modifier = Modifier
+                                .size(70.dp)
+                                .clickable(enabled = !isEmpty && !showResult) { onItemClick(item, false) },
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (isEmpty) Color.Transparent else Color.White,
+                            border = if (isEmpty) {
+                                androidx.compose.foundation.BorderStroke(2.dp, DuoGray.copy(alpha = 0.3f))
+                            } else {
+                                androidx.compose.foundation.BorderStroke(3.dp, DuoGrayLight)
+                            },
+                            shadowElevation = if (isEmpty) 0.dp else 4.dp
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = if (isEmpty) "" else item,
+                                    fontSize = 28.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "[$index]",
+                            color = DuoGray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(40.dp))
+        Text("YOUR TOOLBOX", fontWeight = FontWeight.ExtraBold, color = DuoGray, fontSize = 12.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        @OptIn(ExperimentalLayoutApi::class)
+        androidx.compose.foundation.layout.FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            availableBank.forEach { item ->
+                Surface(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .clickable(enabled = !showResult) { onItemClick(item, true) },
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(3.dp, DuoGrayLight),
+                    color = Color.White,
+                    shadowElevation = 4.dp
+                ) {
+                    Box(
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = item,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }

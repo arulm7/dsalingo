@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.sp
 import com.app.dsalingo.ui.theme.*
 import com.app.dsalingo.ui.components.DuoButton
 import com.app.dsalingo.ui.components.DuoSecondaryButton
+import com.app.dsalingo.ui.components.LottieAnimationRawRes
+import com.app.dsalingo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,14 +54,12 @@ fun LandingScreen(
             item {
                 Spacer(modifier = Modifier.height(64.dp))
                 
-                // Mascot Placeholder
+                // Mascot
                 Box(
-                    modifier = Modifier
-                        .size(180.dp)
-                        .background(DuoGrayLight, RoundedCornerShape(90.dp)),
+                    modifier = Modifier.size(180.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("🦉", fontSize = 80.sp) // Representing Duo
+                    LottieAnimationRawRes(resId = R.raw.angry_bird)
                 }
                 
                 Spacer(modifier = Modifier.height(32.dp))
