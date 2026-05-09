@@ -522,10 +522,10 @@ fun CodeSnippet(code: String) {
 }
 
 @Composable
-fun getImageUrl(name: String): String? {
+fun getImageSource(name: String): Any? {
     return when (name) {
         "Zendaya" -> "https://m.media-amazon.com/images/M/MV5BMjAxZTk4YmYtYjUzMi00OTI0LThjN2EtMDljYTdmM2U2NGY2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
-        "Tom Cruise" -> "https://m.media-amazon.com/images/M/MV5BMTk1MjExMzU3M15BMl5BanBnXkFtZTcwNzk3OTgzMw@@._V1_.jpg"
+        "Tom Cruise", "Tom" -> R.drawable.tom
         "The Rock" -> "https://m.media-amazon.com/images/M/MV5BMTkyNDQ3NzAxM15BMl5BanBnXkFtZTgwODIwMTQ0OEE@._V1_.jpg"
         "Spider-Man" -> "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_.jpg"
         "Iron Man" -> "https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_.jpg"
@@ -535,7 +535,6 @@ fun getImageUrl(name: String): String? {
         "Cars" -> "https://m.media-amazon.com/images/M/MV5BMTYxNjY5ZmYtNjcyOS00N2RmLWE3MzktYWU2OTliZTM4ZDExXkEyXkFqcGdeQXVyNjk1Njg0MzI@._V1_.jpg"
         "Robert" -> "https://m.media-amazon.com/images/M/MV5BNTk2OGU4NzktODA5Ni00MDYyLWIyYWUtOWI2NDI1Y2ZkY2M3XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
         "Cillian" -> "https://m.media-amazon.com/images/M/MV5BMjA5Njk3MjM4OV5BMl5BanBnXkFtZTcwMTc5MTE1Nw@@._V1_.jpg"
-        "Tom" -> "https://m.media-amazon.com/images/M/MV5BMTk1MjExMzU3M15BMl5BanBnXkFtZTcwNzk3OTgzMw@@._V1_.jpg"
         else -> null
     }
 }
@@ -586,10 +585,10 @@ fun ArrayInteractionBody(
                                 if (isEmpty) {
                                     Text("?", color = Color.White.copy(alpha = 0.3f), fontSize = 32.sp)
                                 } else {
-                                    val imageUrl = getImageUrl(item)
-                                    if (imageUrl != null) {
+                                    val imageSource = getImageSource(item)
+                                    if (imageSource != null) {
                                         AsyncImage(
-                                            model = imageUrl,
+                                            model = imageSource,
                                             contentDescription = item,
                                             modifier = Modifier.fillMaxSize(),
                                             contentScale = androidx.compose.ui.layout.ContentScale.Crop
@@ -674,10 +673,10 @@ fun ArrayInteractionBody(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val imageUrl = getImageUrl(item)
-                        if (imageUrl != null) {
+                        val imageSource = getImageSource(item)
+                        if (imageSource != null) {
                             AsyncImage(
-                                model = imageUrl,
+                                model = imageSource,
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp).clip(CircleShape),
                                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
