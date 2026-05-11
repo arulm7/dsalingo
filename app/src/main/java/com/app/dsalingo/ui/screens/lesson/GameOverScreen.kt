@@ -31,7 +31,7 @@ fun GameOverScreen(onQuit: () -> Unit) {
     ) {
         Box(modifier = Modifier.size(250.dp), contentAlignment = Alignment.Center) {
 //            LottieAnimationView(url = "https://lottie.host/80447384-5a67-466d-966a-12798e3b3303/4O2oN5kF0T.json") // Sad Owl
-            LottieAnimationRawRes(resId = R.raw.angry_bird)
+            LottieAnimationRawRes(resId = R.raw.crying)
         }
         Spacer(modifier = Modifier.height(32.dp))
         Text("Out of hearts!", fontSize = 32.sp, fontWeight = FontWeight.ExtraBold, color = DuoRed)
