@@ -32,6 +32,7 @@ import com.app.dsalingo.ui.theme.*
 import com.app.dsalingo.ui.components.DuoButton
 import com.app.dsalingo.ui.components.LottieAnimationView
 import com.app.dsalingo.ui.components.LottieAnimationRawRes
+import com.app.dsalingo.ui.components.LottieAnimationAsset
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.dsalingo.R
 
@@ -222,11 +223,18 @@ fun QuestionBody(
                     contentAlignment = Alignment.Center
                 ) {
                     when {
+                        streakCount >= 3 && !showResult -> {
+                            LottieAnimationRawRes(resId = R.raw.attack)
+                        }
                         showResult && !isCorrect && hearts <= 1 -> {
-                            LottieAnimationRawRes(resId = R.raw.angry_bird)
+                            // High stakes/game over soon
+                            LottieAnimationRawRes(resId = R.raw.crying)
                         }
                         showResult && !isCorrect -> {
                             LottieAnimationRawRes(resId = R.raw.angry_bird)
+                        }
+                        showResult && isCorrect -> {
+                            LottieAnimationAsset(assetPath = "questions/python/flying.json")
                         }
                         else -> {
                             LottieAnimationRawRes(resId = R.raw.angry_bird)

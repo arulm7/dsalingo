@@ -40,3 +40,20 @@ fun LottieAnimationRawRes(resId: Int, modifier: Modifier = Modifier) {
         contentScale = ContentScale.Fit
     )
 }
+
+@Composable
+fun LottieAnimationAsset(assetPath: String, modifier: Modifier = Modifier) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset(assetPath))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = true
+    )
+    
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = modifier.fillMaxSize(),
+        contentScale = ContentScale.Fit
+    )
+}
