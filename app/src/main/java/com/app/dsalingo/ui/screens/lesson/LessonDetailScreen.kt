@@ -56,7 +56,7 @@ fun LessonDetailScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(categoryId) {
-        viewModel.loadQuestions("python", categoryId)
+        viewModel.loadQuestions(categoryId)
     }
 
     val currentQuestion = questions.getOrNull(currentQuestionIndex)

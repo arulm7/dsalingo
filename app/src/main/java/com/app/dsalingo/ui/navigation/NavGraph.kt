@@ -40,8 +40,9 @@ fun NavGraph(
         composable(Screen.Login.route) {
             LoginScreen(
                 onNavigateToSignup = { navController.navigate(Screen.Signup.route) },
-                onLoginSuccess = { 
-                    navController.navigate(Screen.Dashboard.route) {
+                onLoginSuccess = { isAdmin ->
+                    val destination = if (isAdmin) Screen.AdminDashboard.route else Screen.Dashboard.route
+                    navController.navigate(destination) {
                         popUpTo(Screen.Landing.route) { inclusive = true }
                     }
                 },
@@ -108,6 +109,16 @@ fun NavGraph(
 
         composable(Screen.Profile.route) {
             ProfileScreen(
+                onSignOut = {
+                    navController.navigate(Screen.Landing.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.AdminDashboard.route) {
+            com.app.dsalingo.ui.screens.admin.AdminDashboardScreen(
                 onSignOut = {
                     navController.navigate(Screen.Landing.route) {
                         popUpTo(0) { inclusive = true }

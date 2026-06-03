@@ -19,16 +19,31 @@ import androidx.compose.ui.unit.sp
 import com.app.dsalingo.ui.components.DuoButton
 import com.app.dsalingo.ui.components.DuoTextField
 import com.app.dsalingo.ui.theme.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onNavigateToSignup: () -> Unit,
-    onLoginSuccess: () -> Unit,
-    onBack: () -> Unit = {}
+    onLoginSuccess: (Boolean) -> Unit,
+    onBack: () -> Unit = {},
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(error) {
+        error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            viewModel.clearError()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -56,8 +71,9 @@ fun LoginScreen(
             DuoTextField(
                 value = email,
                 onValueChange = { email = it },
-                placeholder = "Email",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                placeholder = "Username or Email",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -67,16 +83,34 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 placeholder = "Password",
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            DuoButton(
-                text = "LOG IN",
-                onClick = onLoginSuccess,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (isLoading) {
+                CircularProgressIndicator(color = DuoBlue)
+            } else {
+                DuoButton(
+                    text = "LOG IN",
+                    onClick = {
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            if (email.trim().lowercase() == "admin" && password == "admin123") {
+                                Toast.makeText(context, "Logged in as Admin!", Toast.LENGTH_SHORT).show()
+                                onLoginSuccess(true)
+                            } else {
+                                viewModel.login(email, password) {
+                                    onLoginSuccess(false)
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -97,12 +131,24 @@ fun LoginScreen(
 fun SignupScreen(
     onNavigateToLogin: () -> Unit,
     onSignupSuccess: () -> Unit,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(error) {
+        error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            viewModel.clearError()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -130,7 +176,8 @@ fun SignupScreen(
             DuoTextField(
                 value = username,
                 onValueChange = { username = it },
-                placeholder = "Username"
+                placeholder = "Username",
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -139,7 +186,8 @@ fun SignupScreen(
                 value = email,
                 onValueChange = { email = it },
                 placeholder = "Email",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -149,7 +197,8 @@ fun SignupScreen(
                 onValueChange = { password = it },
                 placeholder = "Password",
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -159,16 +208,34 @@ fun SignupScreen(
                 onValueChange = { confirmPassword = it },
                 placeholder = "Confirm Password",
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            DuoButton(
-                text = "CREATE ACCOUNT",
-                onClick = onSignupSuccess,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (isLoading) {
+                CircularProgressIndicator(color = DuoBlue)
+            } else {
+                DuoButton(
+                    text = "CREATE ACCOUNT",
+                    onClick = {
+                        if (username.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
+                            if (password == confirmPassword) {
+                                viewModel.register(username, email, password) {
+                                    Toast.makeText(context, "Account created!", Toast.LENGTH_SHORT).show()
+                                    onSignupSuccess()
+                                }
+                            } else {
+                                Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

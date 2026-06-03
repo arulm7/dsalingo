@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.dsalingo.data.model.Question
 import com.app.dsalingo.data.repository.QuestionRepository
+import com.app.dsalingo.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LessonViewModel @Inject constructor(
-    private val repository: QuestionRepository
+    private val repository: QuestionRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _questions = MutableStateFlow<List<Question>>(emptyList())
@@ -25,12 +27,12 @@ class LessonViewModel @Inject constructor(
     private val _isError = MutableStateFlow(false)
     val isError: StateFlow<Boolean> = _isError.asStateFlow()
 
-    fun loadQuestions(language: String, categoryId: String) {
+    fun loadQuestions(categoryId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _isError.value = false
             try {
-                val loadedQuestions = repository.getQuestionsForLesson(language, categoryId)
+                val loadedQuestions = repository.getQuestionsForLesson(categoryId)
                 if (loadedQuestions.isEmpty()) {
                     _isError.value = true
                 } else {
@@ -41,6 +43,18 @@ class LessonViewModel @Inject constructor(
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    fun completeQuestion(questionId: String) {
+        viewModelScope.launch {
+            userRepository.completeQuestion(questionId)
+        }
+    }
+
+    fun addXp(xpGain: Int) {
+        viewModelScope.launch {
+            userRepository.updateStats(xpGain = xpGain)
         }
     }
 }

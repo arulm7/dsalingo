@@ -11,13 +11,9 @@ data class User(
     val crowns: Int = 0,
     val isPro: Boolean = false,
     val achievements: List<Achievement> = emptyList(),
-    val languageProgress: List<LanguageProgress> = emptyList(),
     val dailyGoal: Int = 50,     // XP target per day (default 50)
-    val joinDate: String = "",
-    val preferredLanguage: ProgrammingLanguage = ProgrammingLanguage.PYTHON
+    val joinDate: String = ""
 )
-
-enum class ProgrammingLanguage { PYTHON, JAVA, CPP }
 
 data class Achievement(
     val id: String = "",
@@ -28,15 +24,6 @@ data class Achievement(
     val xpReward: Int = 0
 )
 
-data class LanguageProgress(
-    val language: ProgrammingLanguage = ProgrammingLanguage.PYTHON,
-    val unitsCompleted: Int = 0,
-    val lessonsCompleted: Int = 0,
-    val totalXp: Int = 0,
-    val streak: Int = 0,
-    val crowns: Int = 0
-)
-
 data class Lesson(
     val id: String = "",
     val title: String = "",
@@ -44,7 +31,6 @@ data class Lesson(
     val type: LessonType = LessonType.CONCEPT,           // CONCEPT, PRACTICE, CHALLENGE, QUIZ
     val difficulty: Difficulty = Difficulty.BEGINNER,      // BEGINNER, INTERMEDIATE, ADVANCED
     val xpReward: Int = 50,              // 50 / 75 / 100
-    val language: ProgrammingLanguage = ProgrammingLanguage.PYTHON,
     val unit: String = "",               // category ID (e.g. "array", "stack")
     val content: LessonContent = LessonContent("", null, emptyList()),
     val isCompleted: Boolean = false,

@@ -49,15 +49,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        item {
-            PreferredLanguageSelector()
-            Spacer(modifier = Modifier.height(24.dp))
-        }
 
-        item {
-            LanguageProgressSection()
-            Spacer(modifier = Modifier.height(24.dp))
-        }
 
         item {
             com.app.dsalingo.ui.screens.dashboard.AchievementsSection()
@@ -168,105 +160,7 @@ fun StatCardCompact(modifier: Modifier = Modifier, icon: String, title: String, 
     }
 }
 
-@Composable
-fun PreferredLanguageSelector() {
-    var selectedLang by remember { mutableStateOf("Python") }
-    
-    Column {
-        Text("Preferred Language", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LanguageCard(modifier = Modifier.weight(1f), icon = "🐍", name = "Python", isSelected = selectedLang == "Python") { selectedLang = "Python" }
-            LanguageCard(modifier = Modifier.weight(1f), icon = "☕", name = "Java", isSelected = selectedLang == "Java") { selectedLang = "Java" }
-            LanguageCard(modifier = Modifier.weight(1f), icon = "⚡", name = "C++", isSelected = selectedLang == "C++") { selectedLang = "C++" }
-        }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            "This will filter lessons and challenges to show content for your preferred language.",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-        )
-    }
-}
 
-@Composable
-fun LanguageCard(modifier: Modifier = Modifier, icon: String, name: String, isSelected: Boolean, onClick: () -> Unit) {
-    Surface(
-        modifier = modifier
-            .clickable { onClick() }
-            .border(
-                if (isSelected) 2.dp else 2.dp,
-                if (isSelected) DuoBlue else DuoGrayLight,
-                RoundedCornerShape(16.dp)
-            ),
-        shape = RoundedCornerShape(16.dp),
-        color = if (isSelected) DuoBlue.copy(alpha = 0.1f) else Color.White
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(icon, fontSize = 24.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-        }
-    }
-}
-
-@Composable
-fun LanguageProgressSection() {
-    Column {
-        Text("Language Progress", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        LanguageProgressItem("🐍", "Python", 45, 120, 2500, Color(0xFF3B82F6), true)
-        Spacer(modifier = Modifier.height(12.dp))
-        LanguageProgressItem("☕", "Java", 20, 120, 1000, Color(0xFFF97316), false)
-        Spacer(modifier = Modifier.height(12.dp))
-        LanguageProgressItem("⚡", "C++", 5, 120, 200, Color(0xFF8B5CF6), false)
-    }
-}
-
-@Composable
-fun LanguageProgressItem(icon: String, name: String, completed: Int, total: Int, xp: Int, color: Color, isCurrent: Boolean) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
-        color = Color.White
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(icon, fontSize = 20.sp)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    if (isCurrent) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Surface(color = color.copy(alpha = 0.1f), shape = RoundedCornerShape(4.dp)) {
-                            Text("Current", color = color, fontSize = 10.sp, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
-                        }
-                    }
-                }
-                Text("$xp XP", fontWeight = FontWeight.Bold, color = XPGold, fontSize = 14.sp)
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            LinearProgressIndicator(
-                progress = { completed.toFloat() / total.toFloat() },
-                modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
-                color = color,
-                trackColor = color.copy(alpha = 0.2f)
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("$completed/$total lessons completed", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-        }
-    }
-}
 
 @Composable
 fun ProUpgradeCard() {

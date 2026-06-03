@@ -96,7 +96,8 @@ fun DuoTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
@@ -105,6 +106,7 @@ fun DuoTextField(
         modifier = modifier.fillMaxWidth(),
         keyboardOptions = keyboardOptions,
         visualTransformation = visualTransformation,
+        enabled = enabled,
         shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = DuoBlue,
