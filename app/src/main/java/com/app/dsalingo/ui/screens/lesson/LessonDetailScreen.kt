@@ -55,8 +55,8 @@ fun LessonDetailScreen(
     val questions by viewModel.questions.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    LaunchedEffect(categoryId) {
-        viewModel.loadQuestions(categoryId)
+    LaunchedEffect(categoryId, lessonId) {
+        viewModel.loadQuestions(categoryId, lessonId)
     }
 
     val currentQuestion = questions.getOrNull(currentQuestionIndex)
@@ -118,12 +118,14 @@ fun LessonDetailScreen(
                                 hearts = hearts,
                                 streakCount = streakCount,
                                 onCorrectAnswer = {
+                                    viewModel.completeQuestion(question.id)
                                     if (question.type != QuestionType.THEORY) {
                                         streakCount++
                                     }
                                     if (currentQuestionIndex < questions.size - 1) {
                                         currentQuestionIndex++
                                     } else {
+                                        viewModel.addXp(50)
                                         isLessonFinished = true
                                     }
                                 },

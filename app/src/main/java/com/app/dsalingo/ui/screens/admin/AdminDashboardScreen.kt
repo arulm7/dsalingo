@@ -256,6 +256,23 @@ fun AddEditQuestionDialog(
         )
     }
 
+    // New fields for array interaction & drag-drop
+    var itemsInput by remember {
+        mutableStateOf(
+            question?.items?.joinToString(", ") ?: ""
+        )
+    }
+    var correctOrderInput by remember {
+        mutableStateOf(
+            question?.correctOrder?.joinToString(", ") ?: ""
+        )
+    }
+    var arrayDataInput by remember {
+        mutableStateOf(
+            question?.arrayData?.joinToString(", ") ?: ""
+        )
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -283,7 +300,7 @@ fun AddEditQuestionDialog(
                     OutlinedTextField(
                         value = categoryId,
                         onValueChange = { categoryId = it },
-                        label = { Text("Category (e.g. basics, array, stack)") },
+                        label = { Text("Category (basics, array, string, stack)") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -327,7 +344,7 @@ fun AddEditQuestionDialog(
                     OutlinedTextField(
                         value = correctAnswerInput,
                         onValueChange = { correctAnswerInput = it },
-                        label = { Text("Correct Answer (index e.g., 2, or word)") },
+                        label = { Text("Correct Answer (index, e.g. 2, or list, e.g. [A, B])") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -335,7 +352,31 @@ fun AddEditQuestionDialog(
                     OutlinedTextField(
                         value = optionsInput,
                         onValueChange = { optionsInput = it },
-                        label = { Text("Options (Separate with commas e.g. a, b, c, d)") },
+                        label = { Text("Options (For MULTIPLE_CHOICE, e.g. a, b, c, d)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = itemsInput,
+                        onValueChange = { itemsInput = it },
+                        label = { Text("Items / Element Bank (e.g. Zendaya, Robert)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = arrayDataInput,
+                        onValueChange = { arrayDataInput = it },
+                        label = { Text("Initial Array Layout (e.g. (empty slot), Tom)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = correctOrderInput,
+                        onValueChange = { correctOrderInput = it },
+                        label = { Text("Correct Order Indices (e.g. 0, 1, 2)") },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -358,10 +399,27 @@ fun AddEditQuestionDialog(
                         correctAnswerInput.toIntOrNull() != null -> correctAnswerInput.toInt()
                         correctAnswerInput.startsWith("[") && correctAnswerInput.endsWith("]") -> {
                             // Parse simple bracket arrays of strings
-                            correctAnswerInput.replace("[", "").replace("]", "").split(",").map { it.trim() }
+                            correctAnswerInput.replace("[", "").replace("]", "").split(",").map { 
+                                it.replace("\"", "").replace("'", "").trim() 
+                            }
                         }
                         else -> correctAnswerInput
                     }
+
+                    // Parse items
+                    val parsedItems = if (itemsInput.isNotBlank()) {
+                        itemsInput.split(",").map { it.trim() }
+                    } else null
+
+                    // Parse arrayData
+                    val parsedArrayData = if (arrayDataInput.isNotBlank()) {
+                        arrayDataInput.split(",").map { it.trim() }
+                    } else null
+
+                    // Parse correctOrder
+                    val parsedCorrectOrder = if (correctOrderInput.isNotBlank()) {
+                        correctOrderInput.split(",").mapNotNull { it.trim().toIntOrNull() }
+                    } else null
 
                     val request = AdminQuestionRequest(
                         id = id,
@@ -371,7 +429,10 @@ fun AddEditQuestionDialog(
                         options = parsedOptions,
                         correctAnswer = parsedCorrect,
                         explanation = explanation,
-                        code = if (codeSnippet.isNotBlank()) codeSnippet else null
+                        code = if (codeSnippet.isNotBlank()) codeSnippet else null,
+                        items = parsedItems,
+                        arrayData = parsedArrayData,
+                        correctOrder = parsedCorrectOrder
                     )
                     
                     onSubmit(request)

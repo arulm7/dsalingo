@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-//import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -24,21 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.dsalingo.data.model.DataStructureCategory
 import com.app.dsalingo.ui.theme.*
-
-// Added lessonCount to mock data
-val mockCategories = listOf(
-    DataStructureCategory("array", "Array Foundations", "📊", 0xFF1CB0F6, 8, 3),
-    DataStructureCategory("string", "String Secrets", "🔤", 0xFFCE82FF, 30, 0),
-    DataStructureCategory("linkedlist", "Chain Links", "🔗", 0xFF58CC02, 25, 0),
-    DataStructureCategory("stack", "Stack It Up", "📚", 0xFFEA2B2B, 15, 0),
-    DataStructureCategory("queue", "Get in Line", "👥", 0xFFFF9600, 20, 0)
-)
+import androidx.hilt.navigation.compose.hiltViewModel
 
 // Helper to get dynamic lesson count for UI path
 fun getLessonCountForCategory(categoryId: String): Int {
     return when(categoryId) {
-        "basics" -> 10
-        "array" -> 12
+        "basics" -> 5
+        "array" -> 14
         "string" -> 8
         "linkedlist" -> 10
         "stack" -> 6
@@ -48,39 +39,39 @@ fun getLessonCountForCategory(categoryId: String): Int {
 
 @Composable
 fun LearnScreen(
-    onNavigateToCategory: (String) -> Unit
+    onNavigateToCategory: (String) -> Unit,
+    viewModel: LearnViewModel = hiltViewModel()
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            UnitHeader(
-                title = "Section 1: Data Structures",
-                description = "Master the building blocks of algorithms",
-                color = DuoGreen
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-        }
+    val categories by viewModel.categories.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-        items(mockCategories) { category ->
-            DuoCategoryNode(category, onNavigateToCategory)
-            Spacer(modifier = Modifier.height(32.dp))
+    LaunchedEffect(Unit) {
+        viewModel.loadCategories()
+    }
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = DuoGreen)
         }
-        
-//        item {
-//            Spacer(modifier = Modifier.height(32.dp))
-//            Surface(
-//                modifier = Modifier.fillMaxWidth().padding(24.dp),
-//                shape = RoundedCornerShape(16.dp),
-//                color = DuoGrayLight.copy(alpha = 0.3f)
-//            ) {
-//                Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Text("MORE COMING SOON", fontWeight = FontWeight.ExtraBold, color = DuoGray)
-//                    Text("Graphs, Trees, and more!", color = DuoGray, fontSize = 12.sp)
-//                }
-//            }
-//        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                UnitHeader(
+                    title = "Section 1: Data Structures",
+                    description = "Master the building blocks of algorithms",
+                    color = DuoGreen
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
+            items(categories) { category ->
+                DuoCategoryNode(category, onNavigateToCategory)
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
     }
 }
 
@@ -95,7 +86,9 @@ fun DuoCategoryNode(category: DataStructureCategory, onClick: (String) -> Unit) 
         else -> color.copy(alpha = 0.8f)
     }
 
-    val progressTarget = category.completedQuestions.toFloat() / category.totalQuestions.toFloat()
+    val progressTarget = if (category.totalQuestions > 0) {
+        category.completedQuestions.toFloat() / category.totalQuestions.toFloat()
+    } else 0f
     val animatedProgress by animateFloatAsState(
         targetValue = progressTarget,
         animationSpec = tween(1500, easing = FastOutSlowInEasing),
@@ -141,58 +134,80 @@ fun DuoCategoryNode(category: DataStructureCategory, onClick: (String) -> Unit) 
 fun CategoryDetailScreen(
     categoryId: String,
     onNavigateBack: () -> Unit,
-    onNavigateToLesson: (String, String) -> Unit
+    onNavigateToLesson: (String, String) -> Unit,
+    viewModel: LearnViewModel = hiltViewModel()
 ) {
-    val category = mockCategories.find { it.id == categoryId } ?: mockCategories[0]
-    val color = Color(category.color)
-    val totalLessons = getLessonCountForCategory(categoryId)
-    
-    val completedCount = (category.completedQuestions.toFloat() / category.totalQuestions.toFloat() * totalLessons).toInt()
+    val categories by viewModel.categories.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(category.icon, fontSize = 24.sp)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(category.title, fontWeight = FontWeight.ExtraBold)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, contentDescription = null, tint = DuoGray) }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-            )
+    LaunchedEffect(Unit) {
+        viewModel.loadCategories()
+    }
+
+    val category = categories.find { it.id == categoryId }
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = DuoGreen)
         }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding).background(DuoGrayLight.copy(alpha = 0.2f)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(bottom = 64.dp)
-        ) {
-            item {
-                UnitHeader(
-                    title = "Unit 1",
-                    description = "Learn the fundamentals of ${category.title}",
-                    color = color
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-            }
+    } else if (category == null) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+            Text("Category not found.", color = DuoGray)
+        }
+    } else {
+        val color = Color(category.color)
+        val questionsPerLesson = 2
+        val totalLessons = if (category.totalQuestions > 0) {
+            (category.totalQuestions + questionsPerLesson - 1) / questionsPerLesson
+        } else 1
+        
+        val completedCount = category.completedQuestions / questionsPerLesson
 
-            items(totalLessons) { i ->
-                val isLocked = i > completedCount
-                val isCompleted = i < completedCount
-                
-                DuoLessonStep(
-                    index = i,
-                    isLocked = isLocked,
-                    isCompleted = isCompleted,
-                    color = color,
-                    onClick = { onNavigateToLesson(categoryId, "lesson_$i") }
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { 
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(category.icon, fontSize = 24.sp)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(category.title, fontWeight = FontWeight.ExtraBold)
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, contentDescription = null, tint = DuoGray) }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
                 )
-                
-                Spacer(modifier = Modifier.height(24.dp))
+            }
+        ) { padding ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(padding).background(DuoGrayLight.copy(alpha = 0.2f)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                contentPadding = PaddingValues(bottom = 64.dp)
+            ) {
+                item {
+                    UnitHeader(
+                        title = "Unit 1",
+                        description = "Learn the fundamentals of ${category.title}",
+                        color = color
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                items(totalLessons) { i ->
+                    val isLocked = i > completedCount
+                    val isCompleted = i < completedCount
+                    
+                    DuoLessonStep(
+                        index = i,
+                        isLocked = isLocked,
+                        isCompleted = isCompleted,
+                        color = color,
+                        onClick = { onNavigateToLesson(categoryId, "lesson_$i") }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }

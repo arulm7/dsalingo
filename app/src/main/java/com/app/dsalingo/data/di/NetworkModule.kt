@@ -35,7 +35,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://w8pjww5m-80.inc1.devtunnels.ms/dsalingo/")
+            .baseUrl("https://a64e-2a09-bac5-3e0b-11c3-00-1c5-135.ngrok-free.app/dsalingo/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
