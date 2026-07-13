@@ -58,7 +58,8 @@ data class Question(
     val blanks: List<String>? = null,           // for code-completion
     val items: List<String>? = null,            // for drag-drop / array interaction
     val correctOrder: List<Int>? = null,         // for drag-drop
-    val arrayData: List<String>? = null         // initial array state
+    val arrayData: List<String>? = null,         // initial array state
+    val imageUrl: String? = null
 )
 
 enum class QuestionType { 

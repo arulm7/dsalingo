@@ -288,7 +288,26 @@ fun QuestionBody(
                 }
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            if (!question.imageUrl.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    border = androidx.compose.foundation.BorderStroke(2.dp, DuoGrayLight),
+                    color = DuoGrayLight.copy(alpha = 0.05f)
+                ) {
+                    AsyncImage(
+                        model = question.imageUrl,
+                        contentDescription = "Question Image",
+                        modifier = Modifier.fillMaxSize().padding(8.dp),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
 
             Box(modifier = Modifier.weight(1f)) {
                 when (question.type) {
@@ -531,7 +550,12 @@ fun CodeSnippet(code: String) {
 
 @Composable
 fun getImageSource(name: String): Any? {
-    return when (name) {
+    if (name.contains("|")) {
+        val url = name.substringAfter("|").trim()
+        if (url.isNotEmpty()) return url
+    }
+    val cleanName = name.substringBefore("|").trim()
+    return when (cleanName) {
         "Zendaya" -> "https://m.media-amazon.com/images/M/MV5BMjAxZTk4YmYtYjUzMi00OTI0LThjN2EtMDljYTdmM2U2NGY2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
         "Tom Cruise", "Tom" -> R.drawable.tom
         "The Rock" -> "https://m.media-amazon.com/images/M/MV5BMTkyNDQ3NzAxM15BMl5BanBnXkFtZTgwODIwMTQ0OEE@._V1_.jpg"
@@ -543,7 +567,7 @@ fun getImageSource(name: String): Any? {
         "Cars" -> "https://m.media-amazon.com/images/M/MV5BMTYxNjY5ZmYtNjcyOS00N2RmLWE3MzktYWU2OTliZTM4ZDExXkEyXkFqcGdeQXVyNjk1Njg0MzI@._V1_.jpg"
         "Robert" -> "https://m.media-amazon.com/images/M/MV5BNTk2OGU4NzktODA5Ni00MDYyLWIyYWUtOWI2NDI1Y2ZkY2M3XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
         "Cillian" -> "https://m.media-amazon.com/images/M/MV5BMjA5Njk3MjM4OV5BMl5BanBnXkFtZTcwMTc5MTE1Nw@@._V1_.jpg"
-        else -> null
+        else -> if (cleanName.startsWith("http://") || cleanName.startsWith("https://")) cleanName else null
     }
 }
 
@@ -597,7 +621,7 @@ fun ArrayInteractionBody(
                                     if (imageSource != null) {
                                         AsyncImage(
                                             model = imageSource,
-                                            contentDescription = item,
+                                            contentDescription = item.substringBefore('|').trim(),
                                             modifier = Modifier.fillMaxSize(),
                                             contentScale = androidx.compose.ui.layout.ContentScale.Crop
                                         )
@@ -610,7 +634,7 @@ fun ArrayInteractionBody(
                                                 .padding(vertical = 4.dp)
                                         ) {
                                             Text(
-                                                text = item,
+                                                text = item.substringBefore('|').trim(),
                                                 color = Color.White,
                                                 fontSize = 9.sp,
                                                 fontWeight = FontWeight.Bold,
@@ -629,11 +653,12 @@ fun ArrayInteractionBody(
                                                     .background(DuoGrayLight, CircleShape),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                Text(if (item.length > 1) item.take(1) else "🎬")
+                                                val cleanName = item.substringBefore('|').trim()
+                                                Text(if (cleanName.length > 1) cleanName.take(1) else "🎬")
                                             }
                                             Spacer(modifier = Modifier.height(8.dp))
                                             Text(
-                                                text = item,
+                                                text = item.substringBefore('|').trim(),
                                                 fontSize = 11.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 textAlign = TextAlign.Center,
@@ -694,7 +719,7 @@ fun ArrayInteractionBody(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = item,
+                            text = item.substringBefore('|').trim(),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )

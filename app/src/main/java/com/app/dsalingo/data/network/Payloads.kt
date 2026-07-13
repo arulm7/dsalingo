@@ -95,7 +95,8 @@ data class AdminQuestionRequest(
     val blanks: List<String>? = null,
     val items: List<String>? = null,
     @SerializedName("correct_order") val correctOrder: List<Int>? = null,
-    @SerializedName("array_data") val arrayData: List<String>? = null
+    @SerializedName("array_data") val arrayData: List<String>? = null,
+    @SerializedName("image_url") val imageUrl: String? = null
 )
 
 data class AdminDeleteRequest(

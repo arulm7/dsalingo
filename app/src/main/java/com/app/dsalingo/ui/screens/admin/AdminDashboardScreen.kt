@@ -2,16 +2,20 @@ package com.app.dsalingo.ui.screens.admin
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.app.dsalingo.data.model.Question
 import com.app.dsalingo.data.model.QuestionType
 import com.app.dsalingo.data.network.AdminQuestionRequest
@@ -256,6 +261,28 @@ fun AddEditQuestionDialog(
         )
     }
 
+    var blanksInput by remember { mutableStateOf(question?.blanks?.joinToString(", ") ?: "") }
+    var itemsInput by remember { mutableStateOf(question?.items?.joinToString(", ") ?: "") }
+    var correctOrderInput by remember { mutableStateOf(question?.correctOrder?.joinToString(", ") ?: "") }
+    var arrayDataInput by remember { mutableStateOf(question?.arrayData?.joinToString(", ") ?: "") }
+    var imageUrlInput by remember { mutableStateOf(question?.imageUrl ?: "") }
+
+    var typeExpanded by remember { mutableStateOf(false) }
+    val questionTypes = listOf("THEORY", "MULTIPLE_CHOICE", "FILL_BLANK", "CODE_COMPLETION", "DRAG_DROP", "ARRAY_INTERACTION")
+
+    val imagePresets = mapOf(
+        "Zendaya" to "https://m.media-amazon.com/images/M/MV5BMjAxZTk4YmYtYjUzMi00OTI0LThjN2EtMDljYTdmM2U2NGY2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg",
+        "The Rock" to "https://m.media-amazon.com/images/M/MV5BMTkyNDQ3NzAxM15BMl5BanBnXkFtZTgwODIwMTQ0OEE@._V1_.jpg",
+        "Spider-Man" to "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_.jpg",
+        "Iron Man" to "https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_.jpg",
+        "Thor" to "https://m.media-amazon.com/images/M/MV5BMTY3MTI5NjQ4Nl5BMl5BanBnXkFtZTcwOTU1OTU0OQ@@._V1_.jpg",
+        "Avengers" to "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNjQxNy00ZGQ5LWFkOTAtZGQ5YzY2ZC00M2RlXkEyXkFqcGdeQXVyNjk1Njg0MzI@._V1_.jpg",
+        "Batman" to "https://m.media-amazon.com/images/M/MV5BMTYwNjAyODIyMF5BMl5BanBnXkFtZTYwNDMwMDk2._V1_.jpg",
+        "Cars" to "https://m.media-amazon.com/images/M/MV5BMTYxNjY5ZmYtNjcyOS00N2RmLWE3MzktYWU2OTliZTM4ZDExXkEyXkFqcGdeQXVyNjk1Njg0MzI@._V1_.jpg",
+        "Robert" to "https://m.media-amazon.com/images/M/MV5BNTk2OGU4NzktODA5Ni00MDYyLWIyYWUtOWI2NDI1Y2ZkY2M3XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg",
+        "Cillian" to "https://m.media-amazon.com/images/M/MV5BMjA5Njk3MjM4OV5BMl5BanBnXkFtZTcwMTc5MTE1Nw@@._V1_.jpg"
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -267,7 +294,7 @@ fun AddEditQuestionDialog(
         },
         text = {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(max = 450.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item {
@@ -289,18 +316,45 @@ fun AddEditQuestionDialog(
                 }
 
                 item {
-                    OutlinedTextField(
-                        value = type,
-                        onValueChange = { type = it.uppercase() },
-                        label = { Text("Question Type (THEORY, MULTIPLE_CHOICE, FILL_BLANK, ARRAY_INTERACTION)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = type,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Question Type") },
+                            trailingIcon = {
+                                IconButton(onClick = { typeExpanded = !typeExpanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Select Type"
+                                    )
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth().clickable { typeExpanded = true }
+                        )
+                        DropdownMenu(
+                            expanded = typeExpanded,
+                            onDismissRequest = { typeExpanded = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            questionTypes.forEach { qType ->
+                                DropdownMenuItem(
+                                    text = { Text(qType) },
+                                    onClick = {
+                                        type = qType
+                                        typeExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
+                
                 item {
                     OutlinedTextField(
                         value = questionText,
                         onValueChange = { questionText = it },
-                        label = { Text("Question Instruction") },
+                        label = { Text("Question Instruction / Prompt") },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 3
                     )
@@ -323,21 +377,136 @@ fun AddEditQuestionDialog(
                         maxLines = 4
                     )
                 }
+
+                // Type-specific fields
+                if (type == "MULTIPLE_CHOICE") {
+                    item {
+                        OutlinedTextField(
+                            value = optionsInput,
+                            onValueChange = { optionsInput = it },
+                            label = { Text("Options (Separate with commas e.g. a, b, c, d)") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+                
+                if (type == "FILL_BLANK" || type == "CODE_COMPLETION") {
+                    item {
+                        OutlinedTextField(
+                            value = blanksInput,
+                            onValueChange = { blanksInput = it },
+                            label = { Text("Blanks (Optional - Separate with commas)") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+                
+                if (type == "ARRAY_INTERACTION" || type == "DRAG_DROP") {
+                    item {
+                        OutlinedTextField(
+                            value = itemsInput,
+                            onValueChange = { itemsInput = it },
+                            label = { Text("Elements Bank Items (Separate with commas e.g. Tom, Zendaya|url)") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    if (type == "ARRAY_INTERACTION") {
+                        item {
+                            OutlinedTextField(
+                                value = arrayDataInput,
+                                onValueChange = { arrayDataInput = it },
+                                label = { Text("Initial Array Layout (Separate with commas e.g. (empty slot), Tom)") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                    item {
+                        OutlinedTextField(
+                            value = correctOrderInput,
+                            onValueChange = { correctOrderInput = it },
+                            label = { Text("Correct Order / Indices (Separate with commas e.g. 0, 1, 2)") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+
                 item {
+                    val correctPlaceholder = when (type) {
+                        "MULTIPLE_CHOICE" -> "Correct Option Index (0-based e.g., 1)"
+                        "FILL_BLANK", "CODE_COMPLETION" -> "Correct Word (e.g. array)"
+                        "ARRAY_INTERACTION" -> "Expected Final Order (Separate with commas e.g. Zendaya, Tom)"
+                        else -> "Correct Answer (e.g. index, word, or comma-separated list)"
+                    }
                     OutlinedTextField(
                         value = correctAnswerInput,
                         onValueChange = { correctAnswerInput = it },
-                        label = { Text("Correct Answer (index e.g., 2, or word)") },
+                        label = { Text(correctPlaceholder) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+
+                // Gamified images field
                 item {
-                    OutlinedTextField(
-                        value = optionsInput,
-                        onValueChange = { optionsInput = it },
-                        label = { Text("Options (Separate with commas e.g. a, b, c, d)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = imageUrlInput,
+                            onValueChange = { imageUrlInput = it },
+                            label = { Text("Question Image URL (Optional)") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Predefined Character Presets:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = DuoGray)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            imagePresets.forEach { (name, url) ->
+                                val isSelected = imageUrlInput == url
+                                val chipColor = if (isSelected) DuoBlue.copy(alpha = 0.1f) else Color.White
+                                val chipBorderColor = if (isSelected) DuoBlue else DuoGrayLight
+                                
+                                Surface(
+                                    modifier = Modifier
+                                        .clickable { 
+                                            imageUrlInput = if (isSelected) "" else url 
+                                        },
+                                    shape = RoundedCornerShape(8.dp),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, chipBorderColor),
+                                    color = chipColor
+                                ) {
+                                    Text(
+                                        text = name,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        if (imageUrlInput.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, DuoGrayLight),
+                                color = Color.White
+                            ) {
+                                AsyncImage(
+                                    model = imageUrlInput,
+                                    contentDescription = "Image Preview",
+                                    modifier = Modifier.fillMaxSize().padding(4.dp),
+                                    contentScale = androidx.compose.ui.layout.ContentScale.Fit
+                                )
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -349,18 +518,39 @@ fun AddEditQuestionDialog(
                     }
                     
                     // Parse options
-                    val parsedOptions = if (optionsInput.isNotBlank()) {
+                    val parsedOptions = if (type == "MULTIPLE_CHOICE" && optionsInput.isNotBlank()) {
                         optionsInput.split(",").map { it.trim() }
                     } else null
 
-                    // Parse correct answer as integer if applicable, else string or list
-                    val parsedCorrect: Any = when {
-                        correctAnswerInput.toIntOrNull() != null -> correctAnswerInput.toInt()
-                        correctAnswerInput.startsWith("[") && correctAnswerInput.endsWith("]") -> {
-                            // Parse simple bracket arrays of strings
-                            correctAnswerInput.replace("[", "").replace("]", "").split(",").map { it.trim() }
+                    // Parse blanks
+                    val parsedBlanks = if ((type == "FILL_BLANK" || type == "CODE_COMPLETION") && blanksInput.isNotBlank()) {
+                        blanksInput.split(",").map { it.trim() }
+                    } else null
+
+                    // Parse items
+                    val parsedItems = if ((type == "ARRAY_INTERACTION" || type == "DRAG_DROP") && itemsInput.isNotBlank()) {
+                        itemsInput.split(",").map { it.trim() }
+                    } else null
+
+                    // Parse arrayData
+                    val parsedArrayData = if (type == "ARRAY_INTERACTION" && arrayDataInput.isNotBlank()) {
+                        arrayDataInput.split(",").map { it.trim() }
+                    } else null
+
+                    // Parse correctOrder
+                    val parsedCorrectOrder = if ((type == "DRAG_DROP" || type == "ARRAY_INTERACTION") && correctOrderInput.isNotBlank()) {
+                        correctOrderInput.split(",").mapNotNull { it.trim().toIntOrNull() }
+                    } else null
+
+                    // Parse correct answer
+                    val parsedCorrect: Any = when (type) {
+                        "MULTIPLE_CHOICE" -> correctAnswerInput.trim().toIntOrNull() ?: 0
+                        "ARRAY_INTERACTION" -> {
+                            if (correctAnswerInput.isNotBlank()) {
+                                correctAnswerInput.split(",").map { it.trim() }
+                            } else ""
                         }
-                        else -> correctAnswerInput
+                        else -> correctAnswerInput.trim()
                     }
 
                     val request = AdminQuestionRequest(
@@ -371,7 +561,12 @@ fun AddEditQuestionDialog(
                         options = parsedOptions,
                         correctAnswer = parsedCorrect,
                         explanation = explanation,
-                        code = if (codeSnippet.isNotBlank()) codeSnippet else null
+                        code = if (codeSnippet.isNotBlank()) codeSnippet else null,
+                        blanks = parsedBlanks,
+                        items = parsedItems,
+                        correctOrder = parsedCorrectOrder,
+                        arrayData = parsedArrayData,
+                        imageUrl = if (imageUrlInput.isNotBlank()) imageUrlInput else null
                     )
                     
                     onSubmit(request)
