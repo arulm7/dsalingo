@@ -98,4 +98,22 @@ class UserRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun getCategories(): List<com.app.dsalingo.data.model.DataStructureCategory> {
+        val user = _currentUser.value
+        val userId = user?.id?.toIntOrNull() ?: 1
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getCategories(userId)
+                if (response.status == "success") {
+                    response.categories
+                } else {
+                    emptyList()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emptyList()
+            }
+        }
+    }
 }

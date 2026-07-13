@@ -27,7 +27,7 @@ class LessonViewModel @Inject constructor(
     private val _isError = MutableStateFlow(false)
     val isError: StateFlow<Boolean> = _isError.asStateFlow()
 
-    fun loadQuestions(categoryId: String) {
+    fun loadQuestions(categoryId: String, lessonId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _isError.value = false
@@ -36,7 +36,17 @@ class LessonViewModel @Inject constructor(
                 if (loadedQuestions.isEmpty()) {
                     _isError.value = true
                 } else {
-                    _questions.value = loadedQuestions
+                    val lessonIndex = lessonId.removePrefix("lesson_").toIntOrNull() ?: 0
+                    val questionsPerLesson = 2
+                    val slicedQuestions = loadedQuestions
+                        .drop(lessonIndex * questionsPerLesson)
+                        .take(questionsPerLesson)
+                    
+                    if (slicedQuestions.isEmpty()) {
+                        _isError.value = true
+                    } else {
+                        _questions.value = slicedQuestions
+                    }
                 }
             } catch (e: Exception) {
                 _isError.value = true
